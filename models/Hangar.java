@@ -1,17 +1,22 @@
+package models;
 public class Hangar {
+    private Integer id;
     private String local;
     private Aviao aviao;
 
-
-    
-
     public Hangar(
-            String local
-            ){
-       /*  Validator<Carro> placaValidator = new Validator<Carro>("(\\d{3})|([a-zA-Z]{4})");
-        if (!placaValidator.isValid(placa))
-            throw new IllegalArgumentException("Placa invalida");*/
+            Integer id,
+            String local){
+        this.id = id;       
         this.local = local;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getLocal() {
@@ -26,7 +31,7 @@ public class Hangar {
         return this.aviao;
     }
 
-    public void setVaga(String vaga) {
-        this.vaga = vaga;
+    public void setAviao(String Aviao) {
+        this.aviao = aviao;
     }
 }
