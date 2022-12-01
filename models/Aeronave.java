@@ -1,5 +1,9 @@
 package models;
-public abstract class Aeronave {
+
+import core.Search;
+import db.Database;
+
+public abstract class Aeronave extends Search implements Database {
     public Integer id;
     public String marca;
     public String modelo;

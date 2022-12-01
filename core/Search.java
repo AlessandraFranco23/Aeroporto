@@ -1,14 +1,10 @@
 package core;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 public abstract class Search {
-    public Object getById(Integer id) {
-        return null;
-    }
+    public abstract Object getById(Integer id) throws SQLException, Exception;
 
-    public List getAll() {
-        return new ArrayList<>();
-    }
+    public abstract List getAll() throws SQLException, Exception;
 }

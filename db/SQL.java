@@ -1,8 +1,8 @@
 package db;
 
 public class SQL {
-    public static final String SELECT_COMPANIA = "";
-    public static final String SELECT_COMPANIA_ID = "";
+    public static final String SELECT_COMPANIA = "SELECT * from COMPANHIA";
+    public static final String SELECT_COMPANIA_ID = "Select * from COMPANHIA where idCompanhia = ?";
     public static final String INSERT_COMPANIA = "";
     public static final String DELETE_COMPANIA = "";
     public static final String UPDATE_COMPANIA = "";

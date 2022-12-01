@@ -1,11 +1,23 @@
 package models;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Voo {
+import core.Search;
+import db.DAO;
+import db.Database;
+
+import static db.SQL.DELETE_VOO;
+import static db.SQL.INSERT_VOO;
+import static db.SQL.UPDATE_VOO;
+import static db.SQL.SELECT_VOO;
+import static db.SQL.SELECT_VOO_ID;
+
+public class Voo extends Search implements Database {
     private Integer id;
     private String numero;
     private String data;
@@ -51,7 +63,7 @@ public class Voo {
 
     public Voo(String numero, String data, String hora, String origem, String destino, String piloto,
             String copiloto, String observação, Integer idPista, Pista pista, Integer idAviao, Aviao aviao,
-            Integer idHelicoptero, Helicoptero helicoptero, Integer idJato, Jato jato) {
+            Integer idHelicoptero, Helicoptero helicoptero, Integer idJato, Jato jato) throws Exception {
         this.numero = numero;
         this.data = data;
         this.hora = hora;
@@ -68,6 +80,23 @@ public class Voo {
         this.helicoptero = helicoptero;
         this.idJato = idJato;
         this.jato = jato;
+
+        PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_VOO);
+        stmt.setString(1, numero);
+        stmt.setString(2, data);
+        stmt.setString(3, hora);
+        stmt.setString(4, origem);
+        stmt.setString(5, destino);
+        stmt.setString(6, piloto);
+        stmt.setString(7, copiloto);
+        stmt.setString(8, observação);
+        stmt.setInt(9, idPista);
+        stmt.setInt(10, idAviao);
+        stmt.setInt(11, idHelicoptero);
+        stmt.setInt(12, idJato);
+        stmt.execute();
+        DAO.closeConnection();
+
     }
 
     public Voo(ResultSet result) throws Exception {
@@ -81,13 +110,13 @@ public class Voo {
         this.copiloto = result.getString("copiloto");
         this.observação = result.getString("observação");
         this.idPista = result.getInt("idPista");
-        // this.pista = pista;
+        this.pista = new Pista().getById(idPista);
         this.idAviao = result.getInt("idAviao");
-        // this.aviao = aviao;
+        this.aviao = new Aviao().getById(idAviao);
         this.idHelicoptero = result.getInt("idHelicoptero");
-        // this.helicoptero = helicoptero;
+        this.helicoptero = new Helicoptero().getById(idHelicoptero);
         this.idJato = result.getInt("idJato");
-        // this.jato = jato;
+        this.jato = new Jato().getById(idJato);
     }
 
     public Integer getId() {
@@ -262,18 +291,56 @@ public class Voo {
         return Objects.equals(id, voo.id) && Objects.equals(numero, voo.numero) && Objects.equals(data, voo.data) && Objects.equals(hora, voo.hora) && Objects.equals(origem, voo.origem) && Objects.equals(destino, voo.destino) && Objects.equals(piloto, voo.piloto) && Objects.equals(copiloto, voo.copiloto) && Objects.equals(observação, voo.observação) && Objects.equals(idPista, voo.idPista) && Objects.equals(pista, voo.pista) && Objects.equals(idAviao, voo.idAviao) && Objects.equals(aviao, voo.aviao) && Objects.equals(idHelicoptero, voo.idHelicoptero) && Objects.equals(helicoptero, voo.helicoptero) && Objects.equals(idJato, voo.idJato) && Objects.equals(jato, voo.jato);
     }
 
-    public void update() {
-
+    public void update() throws SQLException {
+        PreparedStatement stmt = DAO.createConnection().prepareStatement(UPDATE_VOO);
+        stmt.setString(1, numero);
+        stmt.setString(2, data);
+        stmt.setString(3, hora);
+        stmt.setString(4, origem);
+        stmt.setString(5, destino);
+        stmt.setString(6, piloto);
+        stmt.setString(7, copiloto);
+        stmt.setString(8, observação);
+        stmt.setInt(9, idPista);
+        stmt.setInt(10, idAviao);
+        stmt.setInt(11, idHelicoptero);
+        stmt.setInt(12, idJato);
+        stmt.setInt(13, id);
+        stmt.execute();
+        DAO.closeConnection();
     }
 
-    public void delete() {
+    public void delete() throws SQLException {
+        PreparedStatement stmt = DAO.createConnection().prepareStatement(DELETE_VOO);
+        stmt.setInt(1, id);
+        stmt.execute();
+        DAO.closeConnection();
     }
 
-    public Voo getById(Integer id) {
+    public Voo getById(Integer id) throws Exception {
+        PreparedStatement stmt = DAO.createConnection().prepareStatement(SELECT_VOO_ID);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            Voo voo = new Voo(rs);
+            DAO.closeConnection();
+            return voo;
+        }
+        DAO.closeConnection();
         return null;
+
     }
 
-    public List<Voo> getAll() {
-        return new ArrayList<Voo>();
+    public List<Voo> getAll() throws Exception {
+        List<Voo> voos = new ArrayList<Voo>();
+        ResultSet rs = DAO.createConnection().createStatement().executeQuery(SELECT_VOO);
+        while (rs.next()) {
+            Voo voo = new Voo(rs);
+            voos.add(voo);
+        }
+        DAO.closeConnection();
+        return voos;
+
     }
 }
