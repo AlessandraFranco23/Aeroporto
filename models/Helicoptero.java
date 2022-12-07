@@ -3,6 +3,7 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +31,18 @@ public class Helicoptero extends Aeronave {
     public Helicoptero(String marca, String modelo, String cor, int capacidade) throws Exception {
         super(marca, modelo);
         this.cor = cor;
+        if (capacidade < 0)
+            throw new Exception("Capacidade deve ser maior que 0");
+
         this.capacidade = capacidade;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_HELICOPTERO);
-        stmt.setString(1, marca);
-        stmt.setString(2, modelo);
-        stmt.setString(3, cor);
-        stmt.setInt(4, capacidade);
+        stmt.setNull(1, Types.INTEGER);
+
+        stmt.setString(2, marca);
+        stmt.setString(3, modelo);
+        stmt.setString(4, cor);
+        stmt.setInt(5, capacidade);
         stmt.execute();
         DAO.closeConnection();
     }

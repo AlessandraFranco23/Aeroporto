@@ -3,6 +3,7 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +30,19 @@ public class Jato extends Aeronave {
 
     public Jato( String marca, String modelo, int velocidade, String cor) throws Exception {
         super( marca, modelo);
+        
+        if (velocidade < 0)
+            throw new Exception("Velocidade deve ser maior que 0");
         this.velocidade = velocidade;
         this.cor = cor;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_JATO);
-        stmt.setString(1, marca);
-        stmt.setString(2, modelo);
-        stmt.setString(3, cor);
-        stmt.setInt(4, velocidade);
+        stmt.setNull(1, Types.INTEGER);
+
+        stmt.setString(2, marca);
+        stmt.setString(3, modelo);
+        stmt.setString(4, cor);
+        stmt.setInt(5, velocidade);
         stmt.execute();
         DAO.closeConnection();
 

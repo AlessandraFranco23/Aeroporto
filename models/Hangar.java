@@ -3,6 +3,7 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class Hangar extends Search implements Database<Hangar> {
     private Integer idAviao;
     private Aviao aviao;
 
+    public Hangar() {}
+
     public Hangar(
             Integer id,
             String local,
@@ -38,8 +41,10 @@ public class Hangar extends Search implements Database<Hangar> {
         this.idAviao = idAviao;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_HANGAR);
-        stmt.setString(1, local);
-        stmt.setInt(2, idAviao);
+        stmt.setNull(1, Types.INTEGER);
+
+        stmt.setString(2, local);
+        stmt.setInt(3, idAviao);
         stmt.execute();
         DAO.closeConnection();
     }
@@ -62,10 +67,6 @@ public class Hangar extends Search implements Database<Hangar> {
 
     public Aviao getAviao() {
         return this.aviao;
-    }
-
-    public void setAviao(Aviao aviao) {
-        this.aviao = aviao;
     }
 
     public Integer getIdAviao() {

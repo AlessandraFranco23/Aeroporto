@@ -3,11 +3,13 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import core.Search;
+import core.Validator;
 import db.DAO;
 import db.Database;
 
@@ -32,10 +34,13 @@ public class Pista extends Search implements Database {
     }
 
     public Pista(String numero) throws Exception {
+        if (!Validator.numeracaoPista().isValid(numero))
+            throw new IllegalArgumentException("O numero da pista deve seguir o padrão de 1 letra e 2 números");
         this.numero = numero;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_PISTA);
-        stmt.setString(1, numero);
+        stmt.setNull(1, Types.INTEGER);
+        stmt.setString(2, numero);
         stmt.execute();
         DAO.closeConnection();
     }

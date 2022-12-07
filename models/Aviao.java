@@ -3,9 +3,11 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.Validator;
 import db.DAO;
 
 import static db.SQL.DELETE_AVIAO;
@@ -44,17 +46,26 @@ public class Aviao extends Aeronave {
             int capacidade,
             String prefixo) throws Exception {
         super(marca, modelo);
+
+        if (capacidade < 0)
+            throw new IllegalArgumentException("Capacidade deve ser maior que 0");
+
+        if (Validator.prefixoAviao().isValid(prefixo))
+            throw new IllegalArgumentException("O prefixo do avião deve seguir o padrão de 3 letras e 4 números");
+
         this.prefixo = prefixo;
         this.capacidade = capacidade;
         this.idCompanhia = idCompanhia;
         this.companhia = companhia;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_AVIAO);
-        stmt.setString(1, marca);
-        stmt.setString(2, modelo);
-        stmt.setInt(3,idCompanhia);
-        stmt.setInt(4,capacidade);
-        stmt.setString(5, prefixo);
+        stmt.setNull(1, Types.INTEGER);
+
+        stmt.setString(2, marca);
+        stmt.setString(3, modelo);
+        stmt.setInt(4,idCompanhia);
+        stmt.setInt(5,capacidade);
+        stmt.setString(6, prefixo);
         stmt.execute();
         DAO.closeConnection();
     }
@@ -100,10 +111,9 @@ public class Aviao extends Aeronave {
         PreparedStatement stmt = DAO.createConnection().prepareStatement(UPDATE_AVIAO);
         stmt.setString(1, marca);
         stmt.setString(2, modelo);
-        stmt.setInt(3, idCompanhia);
-        stmt.setInt(4, capacidade);
-        stmt.setString(5, prefixo);
-        stmt.setInt(6, id);
+        stmt.setInt(3, capacidade);
+        stmt.setString(4, prefixo);
+        stmt.setInt(5, id);
         stmt.execute();
         DAO.closeConnection();
     }

@@ -3,11 +3,13 @@ package models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import core.Search;
+import core.Validator;
 import db.DAO;
 import db.Database;
 
@@ -36,12 +38,12 @@ public class Voo extends Search implements Database {
     private Integer idJato;
     private Jato jato;
 
-
     public Voo() {
     }
 
-
-    public Voo(Integer id, String numero, String data, String hora, String origem, String destino, String piloto, String copiloto, String observação, Integer idPista, Pista pista, Integer idAviao, Aviao aviao, Integer idHelicoptero, Helicoptero helicoptero, Integer idJato, Jato jato) {
+    public Voo(Integer id, String numero, String data, String hora, String origem, String destino, String piloto,
+            String copiloto, String observação, Integer idPista, Pista pista, Integer idAviao, Aviao aviao,
+            Integer idHelicoptero, Helicoptero helicoptero, Integer idJato, Jato jato) {
         this.id = id;
         this.numero = numero;
         this.data = data;
@@ -64,6 +66,14 @@ public class Voo extends Search implements Database {
     public Voo(String numero, String data, String hora, String origem, String destino, String piloto,
             String copiloto, String observação, Integer idPista, Pista pista, Integer idAviao, Aviao aviao,
             Integer idHelicoptero, Helicoptero helicoptero, Integer idJato, Jato jato) throws Exception {
+
+        if (!Validator.numeracaoVoo().isValid(numero))
+            throw new IllegalArgumentException("A numeração do Voo deve seguir o padrão de 3 letras e 6 números");
+        if (!Validator.origemDestinoVoo().isValid(origem))
+            throw new IllegalArgumentException("Origem deve ser composto por 3 letras");
+        if (!Validator.origemDestinoVoo().isValid(destino))
+            throw new IllegalArgumentException("Destino deve ser composto por 3 letras");
+
         this.numero = numero;
         this.data = data;
         this.hora = hora;
@@ -82,17 +92,18 @@ public class Voo extends Search implements Database {
         this.jato = jato;
 
         PreparedStatement stmt = DAO.createConnection().prepareStatement(INSERT_VOO);
-        stmt.setString(1, numero);
-        stmt.setString(2, data);
-        stmt.setString(3, hora);
-        stmt.setString(4, origem);
-        stmt.setString(5, destino);
-        stmt.setString(6, piloto);
-        stmt.setString(7, copiloto);
-        stmt.setString(8, observação);
-        stmt.setInt(9, idPista);
-        stmt.setInt(10, idAviao);
-        stmt.setInt(11, idHelicoptero);
+        stmt.setNull(1, Types.INTEGER);
+        stmt.setString(2, numero);
+        stmt.setString(3, data);
+        stmt.setString(4, hora);
+        stmt.setString(5, origem);
+        stmt.setString(6, destino);
+        stmt.setString(7, piloto);
+        stmt.setString(8, copiloto);
+        stmt.setString(9, observação);
+        stmt.setInt(10, idPista);
+        stmt.setInt(11, idAviao);
+        stmt.setInt(12, idHelicoptero);
         stmt.setInt(12, idJato);
         stmt.execute();
         DAO.closeConnection();
@@ -255,30 +266,28 @@ public class Voo extends Search implements Database {
         this.jato = jato;
     }
 
-
     @Override
     public String toString() {
         return "{" +
-            " id='" + getId() + "'" +
-            ", numero='" + getNumero() + "'" +
-            ", data='" + getData() + "'" +
-            ", hora='" + getHora() + "'" +
-            ", origem='" + getOrigem() + "'" +
-            ", destino='" + getDestino() + "'" +
-            ", piloto='" + getPiloto() + "'" +
-            ", copiloto='" + getCopiloto() + "'" +
-            ", observação='" + getObservação() + "'" +
-            ", idPista='" + getIdPista() + "'" +
-            ", pista='" + getPista() + "'" +
-            ", idAviao='" + getIdAviao() + "'" +
-            ", aviao='" + getAviao() + "'" +
-            ", idHelicoptero='" + getIdHelicoptero() + "'" +
-            ", helicoptero='" + getHelicoptero() + "'" +
-            ", idJato='" + getIdJato() + "'" +
-            ", jato='" + getJato() + "'" +
-            "}";
+                " id='" + getId() + "'" +
+                ", numero='" + getNumero() + "'" +
+                ", data='" + getData() + "'" +
+                ", hora='" + getHora() + "'" +
+                ", origem='" + getOrigem() + "'" +
+                ", destino='" + getDestino() + "'" +
+                ", piloto='" + getPiloto() + "'" +
+                ", copiloto='" + getCopiloto() + "'" +
+                ", observação='" + getObservação() + "'" +
+                ", idPista='" + getIdPista() + "'" +
+                ", pista='" + getPista() + "'" +
+                ", idAviao='" + getIdAviao() + "'" +
+                ", aviao='" + getAviao() + "'" +
+                ", idHelicoptero='" + getIdHelicoptero() + "'" +
+                ", helicoptero='" + getHelicoptero() + "'" +
+                ", idJato='" + getIdJato() + "'" +
+                ", jato='" + getJato() + "'" +
+                "}";
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -288,7 +297,14 @@ public class Voo extends Search implements Database {
             return false;
         }
         Voo voo = (Voo) o;
-        return Objects.equals(id, voo.id) && Objects.equals(numero, voo.numero) && Objects.equals(data, voo.data) && Objects.equals(hora, voo.hora) && Objects.equals(origem, voo.origem) && Objects.equals(destino, voo.destino) && Objects.equals(piloto, voo.piloto) && Objects.equals(copiloto, voo.copiloto) && Objects.equals(observação, voo.observação) && Objects.equals(idPista, voo.idPista) && Objects.equals(pista, voo.pista) && Objects.equals(idAviao, voo.idAviao) && Objects.equals(aviao, voo.aviao) && Objects.equals(idHelicoptero, voo.idHelicoptero) && Objects.equals(helicoptero, voo.helicoptero) && Objects.equals(idJato, voo.idJato) && Objects.equals(jato, voo.jato);
+        return Objects.equals(id, voo.id) && Objects.equals(numero, voo.numero) && Objects.equals(data, voo.data)
+                && Objects.equals(hora, voo.hora) && Objects.equals(origem, voo.origem)
+                && Objects.equals(destino, voo.destino) && Objects.equals(piloto, voo.piloto)
+                && Objects.equals(copiloto, voo.copiloto) && Objects.equals(observação, voo.observação)
+                && Objects.equals(idPista, voo.idPista) && Objects.equals(pista, voo.pista)
+                && Objects.equals(idAviao, voo.idAviao) && Objects.equals(aviao, voo.aviao)
+                && Objects.equals(idHelicoptero, voo.idHelicoptero) && Objects.equals(helicoptero, voo.helicoptero)
+                && Objects.equals(idJato, voo.idJato) && Objects.equals(jato, voo.jato);
     }
 
     public void update() throws SQLException {
